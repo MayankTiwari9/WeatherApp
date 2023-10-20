@@ -1,6 +1,7 @@
 import './App.css';
 import axios from 'axios';
 import { useState } from 'react';
+import { WiHumidity,WiCloud, WiWindy} from "react-icons/wi";
 
 
 function App() {
@@ -27,9 +28,7 @@ function App() {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data);
       setResult([response.data]);
-      console.log(getResult);
     } catch (error) {
       console.error(error);
     }
@@ -49,7 +48,6 @@ function App() {
       {getResult.length > 0 && ( 
         <div> 
           {getResult.map((result) => {
-            console.log(result);
             return (
               <div key={result.location}>
                 <div>
@@ -84,12 +82,11 @@ function App() {
                     if (hours >= 9 && hours <= 21 && hours % 3 === 0) {
                       return (
                         <div key={index}>
-                          <div>Time: {hourData.time}</div>
-                          <div>Condition: 
+                          <div>{hourData.time}</div>
+                          <div>
                             <img src={hourData.condition.icon} alt='condition' />
-
                             </div>
-                          <div>Temperature: {hourData.temp_c}<sup>o</sup></div>
+                          <div>{hourData.temp_c}<sup>o</sup></div>
                         </div>
                       );
                     }
@@ -114,22 +111,22 @@ function App() {
                       <div>
                         <div>
                           <div>
-                            <img src='#' alt='Feel' />
+                            <WiHumidity/>
                           </div>
                           <div>
-                            <p>Real Feel</p>
-                            <h2>30<sup>o</sup></h2>
+                            <p>Humidity</p>
+                            <h2>{result.current.humidity}<sup>%</sup></h2>
                           </div>
                         </div>
                       </div>
                       <div>
                         <div>
                           <div>
-                            <img src='#' alt='Feel' />
+                            <WiCloud/>
                           </div>
                           <div>
-                            <p>Chance of Rain</p>
-                            <h2>0%</h2>
+                            <p>Cloud</p>
+                            <h2>{result.current.cloud}%</h2>
                           </div>
                         </div>
                       </div>
@@ -138,11 +135,11 @@ function App() {
                       <div>
                         <div>
                           <div>
-                            <img src='#' alt='Feel' />
+                            <WiWindy/>
                           </div>
                           <div>
                             <p>Wind</p>
-                            <h2>0.2 km/h</h2>
+                            <h2>{result.current.wind_kph} km/h</h2>
                           </div>
                         </div>
                         <div>
@@ -151,7 +148,7 @@ function App() {
                           </div>
                           <div>
                             <p>UV index</p>
-                            <h2>3</h2>
+                            <h2>{result.current.uv}</h2>
                           </div>
                         </div>
                       </div>
