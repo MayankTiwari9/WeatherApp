@@ -1,8 +1,39 @@
-body{
-    background-image: url('./background.jpg');
-    background-size: cover;
+*{
+    margin: 0%;
+    padding: 0%;
+    background-color: rgb(245,245,245);
 }
 
-.main{
-    border: 1px solid grey;
+form {
+    margin-left: 8%;
+    margin-top: 0.6%;
+    padding: auto;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+button{
+    position: relative;
+    height: 3vmax;
+    margin: 0.4%;
+    padding: 1%;
+    /* align-items: center; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background-color: rgb(40,167,69);
+    color: white;
+    border: none;
+}
+
+input{
+    width: 40%;
+    height: 2vmax;
+    border-radius: 10px;
+    background-color: rgb(234,236,239);
+    margin: 5px 5px;
+    padding: 0.3vmax;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
