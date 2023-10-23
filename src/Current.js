@@ -1,171 +1,113 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios';
-import { WiHumidity, WiCloud, WiWindy } from "react-icons/wi";
-import uv from './uv-protection.png';
+import axios from 'axios'
+import React, { useCallback, useEffect, useState } from 'react'
 
-const Current = (props) => {
+const Current = () => {
 
-    const [getCurrentResult, setCurrentResult] = useState([]);
-    const [getUserLocation, setUserLocation] = useState(null);
+  const [getCurrentData, setCurrentData] = useState([]);
 
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                setUserLocation({ lat: latitude, long: longitude });
-            }
-        );
-    }
+  const fetchData = useCallback(function () {
 
-    useEffect(() => {
+    axios.get('https://api.openweathermap.org/data/2.5/weather?q=New Delhi&appid=0b4ae15b6e44d28fd75aa378da3ef714')
+      .then(res => {
+        setCurrentData([res.data])
+      })
+      .catch(err => console.log(err))
+  }, [])
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData])
 
-        if (getUserLocation) {
-            const par = {
-                method: 'GET',
-                url: 'https://weatherapi-com.p.rapidapi.com/forecast.json',
-                params: { q: `${getUserLocation.lat},${getUserLocation.long}` },
-                headers: {
-                    'X-RapidAPI-Key': '65f28a5fcfmsh4bd962448c364f5p183a1fjsn69fd2ae594e3',
-                    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
-                },
-            };
+  return (
 
-            try {
-                axios.request(par)
-                    .then(response => {
-                        console.log(response.data);
-
-                        setCurrentResult([response.data]);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    },[getUserLocation]);
-
-    return (
+    <div>
+      {getCurrentData.length > 0 &&
         <div>
-            {getCurrentResult.length > 0 && (
-                <div>
-                    {getCurrentResult.map((result) => {
-                        return (
-                            <div key={result.location}>
-                                <div>
-                                    <div>
-                                        <div>
-                                            <div>
-                                                <h1>{result.location.name}</h1>
-                                            </div>
-                                            <div>
-                                                <p>Chance of rain: {result.current.condition.text}</p>
-                                            </div>
-                                            <div>
-                                                <h1>{result.current.temp_c}<sup>o</sup></h1>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img src={result.current.condition.icon} alt='condition'></img>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div>
-                                        <p>Today's Forecast</p>
-                                    </div>
-                                    <div>
-                                        {result.forecast.forecastday[0] && (
-                                            <div>
-                                                {result.forecast.forecastday[0].hour.map((hourData, index) => {
-                                                    const time = new Date(hourData.time);
-                                                    const hours = time.getHours();
-                                                    if (hours >= 3 && hours < 21 && hours % 3 === 0) {
-                                                        return (
-                                                            <div key={index}>
-                                                                <div>{hourData.time}</div>
-                                                                <div>
-                                                                    <img src={hourData.condition.icon} alt='condition' />
-                                                                </div>
-                                                                <div>{hourData.temp_c}<sup>o</sup></div>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
+          {getCurrentData.map((response) => {
+            const icon = response.weather[0].icon;
+            const directions = ['↑ N', '↗ NE', '→ E', '↘ SE', '↓ S', '↙ SW', '← W', '↖ NW'];
+            const dir = directions[Math.round(response.wind.deg / 45) % 8];
+            const sunset = new Date(response.sys.sunset * 1000);
+            const sunsethours = sunset.getHours();
+            const sunsetminutes = sunset.getMinutes();
+            const sunsetseconds = sunset.getSeconds();
+            const sunsetformattedTime = `${sunsethours}:${sunsetminutes}:${sunsetseconds}`;
 
-                                </div>
-                                <div>
-                                    <div>
-                                        <div>
-                                            <p>Air Condition</p>
-                                        </div>
-                                        <div>
-                                            <button>See more</button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <div>
-                                                <div>
-                                                    <div>
-                                                        <WiHumidity />
-                                                    </div>
-                                                    <div>
-                                                        <p>Humidity</p>
-                                                        <h2>{result.current.humidity}<sup>%</sup></h2>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div>
-                                                    <div>
-                                                        <WiCloud />
-                                                    </div>
-                                                    <div>
-                                                        <p>Cloud</p>
-                                                        <h2>{result.current.cloud}%</h2>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div>
-                                                <div>
-                                                    <div>
-                                                        <WiWindy />
-                                                    </div>
-                                                    <div>
-                                                        <p>Wind</p>
-                                                        <h2>{result.current.wind_kph} km/h</h2>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div>
-                                                        <img src={uv} alt='UV' />
-                                                    </div>
-                                                    <div>
-                                                        <p>UV index</p>
-                                                        <h2>{result.current.uv}</h2>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            const sunrise = new Date(response.sys.sunrise * 1000);
+            const sunrisehours = sunrise.getHours();
+            const sunriseminutes = sunrise.getMinutes();
+            const sunriseseconds = sunrise.getSeconds();
+            const sunriseformattedTime = `${sunrisehours}:${sunriseminutes}:${sunriseseconds}`;
 
-                        )
-                    })}
-                </div>)}
+            return (
+              <div key={response.id}>
+                <div className='main-div'>
+                  <div className='first-div'>
+                    <div className='address-div'>
+                      <h1>{response.name}</h1>&nbsp;
+                      <p>|</p>&nbsp;
+                      <h1>{response.sys.country}</h1>
+                    </div>
+                    <div className='cloud-div'>
+                      <p>Cloud: {response.clouds.all}%</p>
+                    </div>
+                    <div className='temp-div'>
+                      <h1>{(response.main.temp - 273).toFixed(2)}<sup>o</sup></h1>
+                    </div>
+                  </div>
+                  <div className='icon-div'>
+                    <img src={`http://openweathermap.org/img/w/${icon}.png`} alt="icon" />
+                    <h2>{response.weather[0].description}</h2>
+                  </div>
+                </div>
+                <div className='condition-div'>
+                  <div className='condition-heading'>
+                    <h4>Weather Conditions</h4>
+                  </div>
+                  <div className='condition-description'>
+                    <div>
+                      <h2>Feels Like</h2>
+                      <h2>{(response.main.feels_like - 273).toFixed(2)}<sup>o</sup></h2>
+                    </div>
+                    <div>
+                      <h2>Minimum Temperature</h2>
+                      <h2>{(response.main.temp_min - 273).toFixed(2)}<sup>o</sup></h2>
+                    </div>
+                    <div>
+                      <h2>Maximum Temperature</h2>
+                      <h2>{(response.main.temp_max - 273).toFixed(2)}<sup>o</sup></h2>
+                    </div>
+                    <div>
+                      <h2>Humidity</h2>
+                      <h2>{(response.main.humidity)}%</h2>
+                    </div>
+                  </div>
+                  <div className='condition-description'>
+                    <div>
+                      <h2>Sunrise</h2>
+                      <h2>{(sunriseformattedTime)}</h2>
+                    </div>
+                    <div>
+                      <h2>Sunset</h2>
+                      <h2>{sunsetformattedTime}</h2>
+                    </div>
+                    <div>
+                      <h2>Wind Speed</h2>
+                      <h2>{(response.wind.speed)} kmph</h2>
+                    </div>
+                    <div>
+                      <h2>Wind Direction</h2>
+                      <h2>{response.wind.deg} {dir}</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
-    )
+      }
+    </div>
+  )
 }
 
-export default Current;
+export default Current

@@ -1,66 +1,52 @@
-import './App.css';
-import axios from 'axios';
-import { useState } from 'react';
-import Searched from './Searched';
+import React, { useState } from 'react';
 import Current from './Current';
+import Searched from './Searched';
+import axios from 'axios';
+import "./App.css";
+import Footer from './Footer';
 
-
-
-function App() {
+const App = () => {
 
   const [getCity, setCity] = useState('');
   const [getResult, setResult] = useState([]);
   const [getIsShown, setIsShown] = useState(false);
 
-  const formSubmit = async (e) => {
+  const formSubmit = (e) => {
     e.preventDefault();
 
     if (getCity === '') {
-      alert('Please Give a City name');
+      alert('Please Give a City Name to Get Weather Data');
       setIsShown(false);
       return;
     } else {
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${getCity}&appid=0b4ae15b6e44d28fd75aa378da3ef714`)
+        .then(res => {
+          setResult([res.data])
+        })
+        .catch(err => console.log(err))
 
-
-      const options = {
-        method: 'GET',
-        url: 'https://weatherapi-com.p.rapidapi.com/forecast.json',
-        params: {
-          q: getCity,
-          days: '3'
-        },
-        headers: {
-          'X-RapidAPI-Key': '65f28a5fcfmsh4bd962448c364f5p183a1fjsn69fd2ae594e3',
-          'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-        }
-      };
-
-      try {
-        const response = await axios.request(options);
-        setResult([response.data]);
-      } catch (error) {
-        console.error(error);
-      }
-
+        setIsShown(true);
     }
   }
 
-  const handleClick = (e) => {
-    setIsShown(true)
-  }
 
   return (
-    <div>
+    <div className='main'>
 
       <form onSubmit={formSubmit}>
-        <input type='text' id='search' value={getCity} onChange={(e) => setCity(e.target.value)} placeholder='Search for City...' />
-        <button type='submit' onClick={handleClick}>Search</button>
+        <input
+          type='text'
+          id='search'
+          placeholder='Search City.....'
+          onChange={(e) => setCity(e.target.value)}
+        />
       </form>
-      {getIsShown ? <Searched getResult={getResult} getCity={getCity} setCity={setCity} formSubmit={formSubmit}
-        handleClick={handleClick} /> :
-        <Current />}
+
+      {getIsShown ?  <Searched formSubmit={formSubmit} getResult={getResult}/> : <Current />}
+      
+      <Footer/>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
