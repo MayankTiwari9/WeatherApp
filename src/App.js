@@ -4,6 +4,7 @@ import Searched from './Searched';
 import axios from 'axios';
 import "./App.css";
 import Footer from './Footer';
+import ApiKeys from './ApiKeys';
 
 const App = () => {
 
@@ -19,7 +20,7 @@ const App = () => {
       setIsShown(false);
       return;
     } else {
-      axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${getCity}&appid=0b4ae15b6e44d28fd75aa378da3ef714`)
+      axios.get(`${ApiKeys.base}weather?q=${getCity}&appid=${ApiKeys.key}`)
         .then(res => {
           setResult([res.data])
         })

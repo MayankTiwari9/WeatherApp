@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 
 const Searched = (props) => {
 
-  
+
   return (
     <div>
       {props.getResult.length > 0 &&

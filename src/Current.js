@@ -1,20 +1,21 @@
 import axios from 'axios'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react';
+import ApiKeys from './ApiKeys';
 
 const Current = () => {
 
-  const [getCurrentData, setCurrentData] = useState([]);
+  const [getCurrentData, setCurrentData] = useState([]);  
 
   const fetchData = useCallback(function () {
 
-    axios.get('https://api.openweathermap.org/data/2.5/weather?q=New Delhi&appid=0b4ae15b6e44d28fd75aa378da3ef714')
+    axios.get(`${ApiKeys.base}weather?q=New Delhi&appid=${ApiKeys.key}`)
       .then(res => {
         setCurrentData([res.data])
       })
       .catch(err => console.log(err))
   }, [])
 
-  useEffect(() => {
+  useEffect(() => {  
     fetchData();
   }, [fetchData])
 
