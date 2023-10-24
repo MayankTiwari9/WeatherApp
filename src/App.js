@@ -41,6 +41,7 @@ const App = () => {
           placeholder='Search City.....'
           onChange={(e) => setCity(e.target.value)}
         />
+        <button>Submit</button>
       </form>
 
       {getIsShown ?  <Searched formSubmit={formSubmit} getResult={getResult}/> : <Current />}
